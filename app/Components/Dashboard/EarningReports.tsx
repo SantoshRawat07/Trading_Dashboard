@@ -1,7 +1,7 @@
 import React from "react";
 import { TrendingUp } from "lucide-react";
 import { DollarSignIcon } from "lucide-react";
-import Bargraph from "./bargraph";
+import { ChartBarDefault } from "./bargraph";
 
 const EarningReports = ({ isCollapsed }: { isCollapsed: boolean }) => {
   return (
@@ -37,8 +37,8 @@ const EarningReports = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
         {/* RIGHT SIDE (GRAPH) */}
         <div className="w-full lg:w-auto lg:-mt-20 flex justify-center lg:justify-center item-center">
-          <div className="scale-75 md:scale-120 lg:scale-100 origin-center lg:origin-top-right lg:-ml-1 text-gray-900 dark:text-white">
-            <Bargraph />
+          <div className="scale-75 md:scale-120 lg:scale-100 origin-center lg:origin-top-right lg:-ml-1 text-gray-800 dark:text-white lg:w-100">
+            <ChartBarDefault/>
           </div>
         </div>
       </div>

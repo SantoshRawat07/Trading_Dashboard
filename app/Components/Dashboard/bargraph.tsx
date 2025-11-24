@@ -1,103 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChartContainer } from "@mui/x-charts/ChartContainer";
-import { BarPlot } from "@mui/x-charts/BarChart";
-import { ChartsXAxis } from "@mui/x-charts/ChartsXAxis";
-import { axisClasses } from "@mui/x-charts/ChartsAxis";
+import { TrendingUp } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
-const data = [30, 65, 55, 30, 80, 40, 50];
-const labels = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
-function TinyBarChart() {
-  const [isClient, setIsClient] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+export const description = "A bar chart";
 
-  useEffect(() => {
-    setIsClient(true);
+const chartData = [
+  { month: "January", desktop: 186 },
+  { month: "February", desktop: 305 },
+  { month: "March", desktop: 237 },
+  { month: "April", desktop: 73 },
+  { month: "May", desktop: 349 },
+  { month: "June", desktop: 214 },
+  { month: "June", desktop: 134 },
+];
 
-    // Check Tailwind dark mode
-    const checkDark = () =>
-      setIsDark(document.documentElement.classList.contains("dark"));
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig;
 
-    checkDark();
-
-    // Observe for theme changes
-    const observer = new MutationObserver(checkDark);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  if (!isClient) {
-    return (
-      <div
-        style={{
-          width: 410,
-          height: 220,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      ></div>
-    );
-  }
-
+export function ChartBarDefault() {
   return (
-    <ChartContainer
-      key={isDark ? "dark" : "light"} // Force re-render on theme change
-      width={400}
-      height={220}
-      series={[
-        {
-          data,
-          type: "bar",
-          color: "#7C63F1",
-        },
-      ]}
-      xAxis={[
-        {
-          scaleType: "band",
-          data: labels,
-        },
-      ]}
-      sx={{
-        // Day label color dynamically based on theme
-        [`.${axisClasses.bottom} .${axisClasses.label}`]: {
-          fill: isDark ? "#FFFFFF" : "#8A8A8A",
-          fontSize: 13,
-          fontWeight: 500,
-        },
-
-        // Remove axis line
-        [`.${axisClasses.bottom} .${axisClasses.line}`]: {
-          display: "none",
-        },
-
-        // Remove ticks
-        [`.${axisClasses.bottom} .${axisClasses.tick}`]: {
-          display: "none",
-        },
-
-        // Rounded bars
-        "& .MuiBarElement-root": {
-          rx: 6,
-          opacity: 0.25,
-        },
-
-        // Highlight Friday
-        "& .MuiBarElement-root:nth-of-type(5)": {
-          opacity: 1,
-        },
-      }}
-    >
-      <ChartsXAxis />
-      <BarPlot />
-    </ChartContainer>
-  );
+    <Card className="border-none shadow-none w-80 sm:40 md:w-full h-40 py-1 dark:bg-gray-800 ">
+      <CardContent className="px-1 lg:px-6">
+        <ChartContainer config={chartConfig}>
+          <BarChart accessibilityLayer data={chartData}>
+            <defs>
+              <linearGradient id="purpleGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#A855F7" stopOpacity={1} />
+                <stop offset="50%" stopColor="#9333EA" stopOpacity={1} />
+                <stop offset="100%" stopColor="#7C3AED" stopOpacity={1} />
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar dataKey="desktop" fill="url(#purpleGradient)" radius={8} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+  </Card>
+);
 }
-
-export default TinyBarChart;

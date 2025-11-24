@@ -1,13 +1,14 @@
 'use client';
+import { useRouter } from "next/navigation";
+
 
 import React from 'react';
-import Link from 'next/link';
 import { useState } from 'react';
 import { 
   LayoutDashboard, 
   ShoppingCart, 
   Package, 
-  Calendar, 
+  Activity, 
   MessageSquare, 
   Users, 
   Shield, 
@@ -22,40 +23,130 @@ import {
   FileSpreadsheet, 
   Wand2, 
   Mail, 
-  Activity, 
   FolderOpen, 
   ChevronRight,
+  ChevronDown,
   X,
   Menu
 } from 'lucide-react';
 
+
 const Sidebar = ({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean; setIsCollapsed: (collapsed: boolean) => void }) => {
   const [activemenu, setactivemenu] = useState<string>('Dashboard');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>(['Dashboard']);
 
-  const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', badge: '3', active: activemenu === 'Dashboard' },
-    { icon: ShoppingCart, label: 'CRM' },
-    { icon: Package, label: 'eCommerce' },
-    { icon: FileText, label: 'Layouts' },
+  const router = useRouter();
+
+
+  type SubMenuItem = {
+    label: string;
+    icon?: React.ComponentType<any>;
+  };
+  type MenuItem = {
+    icon?: React.ComponentType<any>;
+    label: string;
+    badge?: string;
+    active?: boolean;
+    hasSubmenu?: boolean;
+    submenu?: SubMenuItem[];
+    isHeader?: boolean;
+    href?: string;
+  };
+
+  const menuItems: MenuItem[] = [
+    { 
+      icon: LayoutDashboard, 
+      label: 'Dashboard', 
+      badge: '3', 
+      active: activemenu === 'Dashboard',
+      hasSubmenu: true,
+      submenu: [
+        { label: 'CRM', icon: ShoppingCart },
+        { label: 'eCommerce', icon: Package },
+        { label: 'Layouts', icon: FileText }
+      ]
+    },
     { 
       label: 'APPS & PAGES',
       isHeader: true 
     },
-    { icon: Calendar, label: 'Calendar' },
+    { icon: Activity, label: 'Nepse Trading', href: '/nepse-trading' },
     { icon: MessageSquare, label: 'Chat', badge: '3', active: activemenu === 'Chat' },
     { icon: Users, label: 'Users' },
-    { icon: Shield, label: 'Roles & Permissions', hasSubmenu: true },
-    { icon: FileText, label: 'Pages', hasSubmenu: true },
-    { icon: Lock, label: 'Authentication', hasSubmenu: true },
-    { icon: AlertCircle, label: 'Wizard Examples', hasSubmenu: true },
+    { 
+      icon: Shield, 
+      label: 'Roles & Permissions', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'Roles' },
+        { label: 'Permissions' },
+        { label: 'Assign Roles' },
+        { label: 'Permission Settings' }
+      ]
+    },
+    { 
+      icon: FileText, 
+      label: 'Pages', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'User Profile' },
+        { label: 'Account Settings' },
+        { label: 'FAQ' },
+        { label: 'Help Center' }
+      ]
+    },
+    { 
+      icon: Lock, 
+      label: 'Authentication', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'Login' },
+        { label: 'Register' },
+        { label: 'Forgot Password' },
+        { label: 'Reset Password' }
+      ]
+    },
+    { 
+      icon: AlertCircle, 
+      label: 'Wizard Examples', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'Checkout' },
+        { label: 'Property Listing' },
+        { label: 'Create Deal' },
+        { label: 'Two Step' }
+      ]
+    },
     { icon: Settings, label: 'Modal Examples' },
     {
       label: 'USER INTERFACE',
       isHeader: true
     },
-    { icon: Settings, label: 'User Interface', badge: '4', active: activemenu === 'user Interface', hasSubmenu: true },
-    { icon: Database, label: 'Extended UI', hasSubmenu: true },
+    { 
+      icon: Settings, 
+      label: 'User Interface', 
+      badge: '4', 
+      active: activemenu === 'user Interface', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'Typography' },
+        { label: 'Colors' },
+        { label: 'Cards' },
+        { label: 'Buttons' }
+      ]
+    },
+    { 
+      icon: Database, 
+      label: 'Extended UI', 
+      hasSubmenu: true,
+      submenu: [
+        { label: 'Avatar' },
+        { label: 'Chips' },
+        { label: 'Divider' },
+        { label: 'Progress' }
+      ]
+    },
     { icon: PieChart, label: 'Icons' },
     {
       label: 'FORMS & TABLES',
@@ -81,6 +172,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean; setIsC
     { icon: FileText, label: 'Documentation' },
   ];
 
+  const toggleDropdown = (label: string) => {
+    setOpenDropdowns(prev => 
+      prev.includes(label) 
+        ? prev.filter(item => item !== label)
+        : [...prev, label]
+    );
+  };
+
   return (
     <>
       {/* Mobile Menu Button - Only visible on mobile */}
@@ -102,18 +201,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean; setIsC
       {/* Sidebar */}
       <aside className={`
         bg-white dark:bg-black dark:text-white border-r border-gray-200 dark:border-gray-700 h-screen overflow-y-auto
-
-
         fixed lg:relative z-40 lg:z-auto
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-
-
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}>
         {/* Logo */}
         <div className={`p-4 flex items-center gap-2 ${isCollapsed ? 'flex-col' : ''}`}>
           <div className="">
-            {/* <span className="text-white font-bold">V</span> */}
             <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
               <path d="M6 18L16 28L22 22L12 12L6 18Z" fill="url(#gradient1)" />
               <path
@@ -138,7 +232,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean; setIsC
           {/* Desktop toggle button */}
           <button 
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className={`hidden lg:block shrink-0  rounded p-1 transition-colors ${
+            className={`hidden lg:block shrink-0 rounded p-1 transition-colors ${
               isCollapsed ? '' : 'ml-auto'
             }`}
           >
@@ -177,41 +271,82 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean; setIsC
 
             const Icon = item.icon;
             const isActive = activemenu === item.label;
+            const isOpen = openDropdowns.includes(item.label);
             
             return (
-              <button
-                key={index}
-                onClick={() => {
-                  setactivemenu(item.label);
-                  // Close mobile menu when item is clicked
-                  setIsMobileOpen(false);
-                }}
-                className={`w-full flex items-center ${
-                  isCollapsed ? 'justify-center px-2' : 'justify-between px-4'
-                } py-2.5 rounded-md mb-1 transition-colors ${
-                  isActive
-                    ? 'bg-purple-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-                title={isCollapsed ? item.label : undefined}
-              >
-                <div className={`flex items-center ${isCollapsed ? '' : 'gap-3'}`}>
-                  {Icon && <Icon size={20} className="shrink-0" />}
-                  {!isCollapsed && <span className="text-sm">{item.label}</span>}
-                </div>
-                {!isCollapsed && (
-                  <div className="flex items-center gap-2 shrink-0">
-                    {item.badge && (
-                      <span className={`px-2 py-0.5 text-xs rounded-full ${
-                        item.active ? 'bg-white text-purple-600' : 'bg-red-500 text-white'
-                      }`}>
-                        {item.badge}
-                      </span>
-                    )}
-                    {item.hasSubmenu && <ChevronRight size={16} />}
+              <div key={index}>
+                <button
+  onClick={() => {
+    if (item.href) {
+      router.push(item.href);  // ✅ navigate to new page
+      setactivemenu(item.label);
+      setIsMobileOpen(false);
+      return;
+    }
+
+    if (item.hasSubmenu) {
+      toggleDropdown(item.label);
+    } else {
+      setactivemenu(item.label);
+      setIsMobileOpen(false);
+    }
+  }}
+
+                  className={`w-full flex items-center ${
+                    isCollapsed ? 'justify-center px-2' : 'justify-between px-4'
+                  } py-2.5 rounded-md mb-1 transition-colors ${
+                    isActive
+                      ? 'bg-purple-600 text-white'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  <div className={`flex items-center ${isCollapsed ? '' : 'gap-3'}`}>
+                    {Icon && <Icon size={20} className="shrink-0" />}
+                    {!isCollapsed && <span className="text-sm">{item.label}</span>}
+                  </div>
+                  {!isCollapsed && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      {item.badge && (
+                        <span className={`px-2 py-0.5 text-xs rounded-full ${
+                          item.active ? 'bg-white text-purple-600' : 'bg-red-500 text-white'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                      {item.hasSubmenu && (
+                        isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                      )}
+                    </div>
+                  )}
+                </button>
+
+                {/* Submenu */}
+                {item.hasSubmenu && item.submenu && !isCollapsed && isOpen && (
+                  <div className="ml-4 mt-1 mb-2 space-y-1">
+                    {item.submenu.map((subItem, subIndex) => {
+                      const SubIcon = subItem.icon;
+                      return (
+                        <button
+                          key={subIndex}
+                          onClick={() => {
+                            setactivemenu(subItem.label);
+                            setIsMobileOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-2 rounded-md text-sm transition-colors ${
+                            activemenu === subItem.label
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          }`}
+                        >
+                          {SubIcon && <SubIcon size={18} className="shrink-0" />}
+                          <span>{subItem.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
-              </button>
+              </div>
             );
           })}
         </nav>

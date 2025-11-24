@@ -69,6 +69,7 @@ const ProjectStatus = ({ isCollapsed }: { isCollapsed: boolean }) => {
               strokeDasharray="3 3"
               stroke="#f0f0f0"
               vertical={false}
+              horizontal={false}
             />
 
             <XAxis
